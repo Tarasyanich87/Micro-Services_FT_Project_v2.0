@@ -1,0 +1,94 @@
+{
+  "timestamp": "2025-12-11T00:22:54.910767",
+  "system_status": {
+    "Management Server": {
+      "url": "http://localhost:8002",
+      "status_code": 200,
+      "healthy": true,
+      "response": {
+        "status": "healthy",
+        "service": "management_server",
+        "profile": "full_featured",
+        "version": "1.0.0",
+        "timestamp": "2025-12-10T22:22:55.078955+00:00"
+      }
+    },
+    "Trading Gateway": {
+      "url": "http://localhost:8001",
+      "status_code": 200,
+      "healthy": true,
+      "response": {
+        "status": "ok"
+      }
+    },
+    "Backtesting Server": {
+      "url": "http://localhost:8003",
+      "status_code": 200,
+      "healthy": true,
+      "response": {
+        "status": "healthy",
+        "service": "backtesting_server",
+        "version": "0.1.0",
+        "redis_connected": true,
+        "active_tasks": 0
+      }
+    },
+    "FreqAI Server": {
+      "url": "http://localhost:8004",
+      "status_code": 200,
+      "healthy": true,
+      "response": {
+        "status": "healthy",
+        "service": "freqai_server",
+        "version": "0.1.0",
+        "redis_connected": true,
+        "devices": {
+          "total_devices": 1,
+          "gpu_devices": 0,
+          "recommended_device": "cpu"
+        }
+      }
+    }
+  },
+  "test_results": {
+    "API Tests": {
+      "total": 0,
+      "passed": 0,
+      "failed": 0,
+      "success_rate": 0
+    },
+    "Unit Tests": {
+      "total": 0,
+      "passed": 0,
+      "failed": 0,
+      "success_rate": 0
+    },
+    "Integration Tests": {
+      "total": 0,
+      "passed": 0,
+      "failed": 0,
+      "success_rate": 0
+    },
+    "E2E Tests": {
+      "total": 0,
+      "passed": 0,
+      "failed": 0,
+      "success_rate": 0
+    },
+    "All Tests": {
+      "total": 0,
+      "passed": 0,
+      "failed": 0,
+      "success_rate": 0
+    }
+  },
+  "summary": {
+    "total_services": 4,
+    "healthy_services": 4,
+    "total_tests": 0,
+    "passed_tests": 0,
+    "failed_tests": 0,
+    "overall_success_rate": 0,
+    "system_health_score": 100.0
+  }
+}

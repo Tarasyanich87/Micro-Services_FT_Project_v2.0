@@ -1,0 +1,87 @@
+{
+  "timestamp": 1765340112.907448,
+  "total_tests": 13,
+  "passed": 13,
+  "failed": 0,
+  "success_rate": 100.0,
+  "results": [
+    {
+      "test": "Get Strategies List",
+      "success": true,
+      "details": "Found 4 strategies: ['TestStrategy', 'FreqaiExampleStrategy', 'SimpleDryRunStrategy', 'UltraSimpleStrategy']",
+      "timestamp": 1765340110.3905668
+    },
+    {
+      "test": "Analyze Strategy Code",
+      "success": true,
+      "details": "Valid: True, Errors: 0, Parameters: 6",
+      "timestamp": 1765340110.5792491
+    },
+    {
+      "test": "Analyze Strategy Code",
+      "success": true,
+      "details": "Valid: False, Errors: 1, Parameters: 0 | Sample error: Could not find a class inheriting from 'IStrategy'....",
+      "timestamp": 1765340110.6920087
+    },
+    {
+      "test": "MD to Python Conversion",
+      "success": true,
+      "details": "Generated 21 lines of code",
+      "timestamp": 1765340111.0046246
+    },
+    {
+      "test": "Create Strategy: TestStrategy_1765340109",
+      "success": true,
+      "details": "",
+      "timestamp": 1765340111.3878045
+    },
+    {
+      "test": "Get Strategy Code: TestStrategy_1765340109",
+      "success": true,
+      "details": "Code length: 1272 chars",
+      "timestamp": 1765340111.6276615
+    },
+    {
+      "test": "Update Strategy: TestStrategy_1765340109",
+      "success": true,
+      "details": "",
+      "timestamp": 1765340111.9793584
+    },
+    {
+      "test": "Get Strategy Code: TestStrategy_1765340109",
+      "success": true,
+      "details": "Code length: 1279 chars",
+      "timestamp": 1765340112.2638888
+    },
+    {
+      "test": "Verify Strategy Update",
+      "success": true,
+      "details": "",
+      "timestamp": 1765340112.2638943
+    },
+    {
+      "test": "Delete Strategy: TestStrategy_1765340109",
+      "success": true,
+      "details": "",
+      "timestamp": 1765340112.527558
+    },
+    {
+      "test": "Get Strategies List",
+      "success": true,
+      "details": "Found 4 strategies: ['TestStrategy', 'FreqaiExampleStrategy', 'SimpleDryRunStrategy', 'UltraSimpleStrategy']",
+      "timestamp": 1765340112.6488147
+    },
+    {
+      "test": "Verify Strategy Deletion",
+      "success": true,
+      "details": "",
+      "timestamp": 1765340112.6488209
+    },
+    {
+      "test": "Get Backtest Results",
+      "success": true,
+      "details": "Found 4 backtest results",
+      "timestamp": 1765340112.9072237
+    }
+  ]
+}

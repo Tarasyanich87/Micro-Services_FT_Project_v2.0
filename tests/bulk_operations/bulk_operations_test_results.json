@@ -1,0 +1,43 @@
+{
+  "timestamp": 1765338389.1963778,
+  "total_bots": 29,
+  "total_time": 1.2377192974090576,
+  "total_success": 21,
+  "total_failures": 8,
+  "success_rate": 72.41379310344827,
+  "results": [
+    {
+      "operation": "create_bots",
+      "bots_count": 15,
+      "total_time": 0.6144163608551025,
+      "avg_time": 0.0409610907236735,
+      "success_count": 7,
+      "failure_count": 8,
+      "errors": [
+        "HTTP 500: {\"error\":\"Internal server error\",\"timestamp\":\"2025-12-10T03:46:22.174362+00:00\",\"path\":\"http://localhost:8002/api/v1/bots/\"}",
+        "HTTP 500: {\"error\":\"Internal server error\",\"timestamp\":\"2025-12-10T03:46:22.211763+00:00\",\"path\":\"http://localhost:8002/api/v1/bots/\"}",
+        "HTTP 500: {\"error\":\"Internal server error\",\"timestamp\":\"2025-12-10T03:46:22.279850+00:00\",\"path\":\"http://localhost:8002/api/v1/bots/\"}",
+        "HTTP 500: {\"error\":\"Internal server error\",\"timestamp\":\"2025-12-10T03:46:22.244830+00:00\",\"path\":\"http://localhost:8002/api/v1/bots/\"}",
+        ""
+      ]
+    },
+    {
+      "operation": "start_bots",
+      "bots_count": 7,
+      "total_time": 0.26701831817626953,
+      "avg_time": 0.03814547402518136,
+      "success_count": 7,
+      "failure_count": 0,
+      "errors": []
+    },
+    {
+      "operation": "stop_bots",
+      "bots_count": 7,
+      "total_time": 0.35628461837768555,
+      "avg_time": 0.05089780262538365,
+      "success_count": 7,
+      "failure_count": 0,
+      "errors": []
+    }
+  ]
+}

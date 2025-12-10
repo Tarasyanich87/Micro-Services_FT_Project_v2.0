@@ -1,0 +1,506 @@
+{
+  "timestamp": 1765377746.4043784,
+  "total_tests": 65,
+  "passed": 21,
+  "failed": 44,
+  "success_rate": 32.30769230769231,
+  "dashboard_stats": {
+    "Home Dashboard": {
+      "total": 7,
+      "passed": 3
+    },
+    "Bot Management Dashboard": {
+      "total": 7,
+      "passed": 2
+    },
+    "Strategies Dashboard": {
+      "total": 7,
+      "passed": 2
+    },
+    "Analytics Dashboard": {
+      "total": 7,
+      "passed": 2
+    },
+    "FreqAI Lab Dashboard": {
+      "total": 6,
+      "passed": 2
+    },
+    "Data Management Dashboard": {
+      "total": 6,
+      "passed": 2
+    },
+    "Hyperopt Dashboard": {
+      "total": 6,
+      "passed": 2
+    },
+    "Monitoring Dashboard": {
+      "total": 6,
+      "passed": 2
+    },
+    "Audit Dashboard": {
+      "total": 6,
+      "passed": 2
+    },
+    "Login Dashboard": {
+      "total": 7,
+      "passed": 2
+    }
+  },
+  "results": [
+    {
+      "dashboard": "Home Dashboard",
+      "test": "HTTP Status",
+      "success": true,
+      "details": "Status: 200",
+      "timestamp": 1765377745.858014
+    },
+    {
+      "dashboard": "Home Dashboard",
+      "test": "Content Type",
+      "success": true,
+      "details": "Content-Type: text/html",
+      "timestamp": 1765377745.8580258
+    },
+    {
+      "dashboard": "Home Dashboard",
+      "test": "Content Length",
+      "success": false,
+      "details": "Length: 421 chars",
+      "timestamp": 1765377745.8580973
+    },
+    {
+      "dashboard": "Home Dashboard",
+      "test": "Vue Framework",
+      "success": false,
+      "details": "Vue.js detected",
+      "timestamp": 1765377745.8581028
+    },
+    {
+      "dashboard": "Home Dashboard",
+      "test": "Home Title",
+      "success": true,
+      "details": "Freqtrade branding found",
+      "timestamp": 1765377745.8581061
+    },
+    {
+      "dashboard": "Home Dashboard",
+      "test": "Navigation",
+      "success": false,
+      "details": "Navigation elements found",
+      "timestamp": 1765377745.8581095
+    },
+    {
+      "dashboard": "Home Dashboard",
+      "test": "Action Buttons",
+      "success": false,
+      "details": "Interactive buttons found",
+      "timestamp": 1765377745.8581123
+    },
+    {
+      "dashboard": "Bot Management Dashboard",
+      "test": "HTTP Status",
+      "success": true,
+      "details": "Status: 200",
+      "timestamp": 1765377745.893543
+    },
+    {
+      "dashboard": "Bot Management Dashboard",
+      "test": "Content Type",
+      "success": true,
+      "details": "Content-Type: text/html",
+      "timestamp": 1765377745.8935556
+    },
+    {
+      "dashboard": "Bot Management Dashboard",
+      "test": "Content Length",
+      "success": false,
+      "details": "Length: 421 chars",
+      "timestamp": 1765377745.8936486
+    },
+    {
+      "dashboard": "Bot Management Dashboard",
+      "test": "Vue Framework",
+      "success": false,
+      "details": "Vue.js detected",
+      "timestamp": 1765377745.8936567
+    },
+    {
+      "dashboard": "Bot Management Dashboard",
+      "test": "Bot Elements",
+      "success": false,
+      "details": "Bot-related content found",
+      "timestamp": 1765377745.893663
+    },
+    {
+      "dashboard": "Bot Management Dashboard",
+      "test": "Navigation",
+      "success": false,
+      "details": "Navigation elements found",
+      "timestamp": 1765377745.8936691
+    },
+    {
+      "dashboard": "Bot Management Dashboard",
+      "test": "Action Buttons",
+      "success": false,
+      "details": "Interactive buttons found",
+      "timestamp": 1765377745.8936749
+    },
+    {
+      "dashboard": "Strategies Dashboard",
+      "test": "HTTP Status",
+      "success": true,
+      "details": "Status: 200",
+      "timestamp": 1765377746.2342498
+    },
+    {
+      "dashboard": "Strategies Dashboard",
+      "test": "Content Type",
+      "success": true,
+      "details": "Content-Type: text/html",
+      "timestamp": 1765377746.2342627
+    },
+    {
+      "dashboard": "Strategies Dashboard",
+      "test": "Content Length",
+      "success": false,
+      "details": "Length: 421 chars",
+      "timestamp": 1765377746.2343278
+    },
+    {
+      "dashboard": "Strategies Dashboard",
+      "test": "Vue Framework",
+      "success": false,
+      "details": "Vue.js detected",
+      "timestamp": 1765377746.2343352
+    },
+    {
+      "dashboard": "Strategies Dashboard",
+      "test": "Strategy Elements",
+      "success": false,
+      "details": "Strategy-related content found",
+      "timestamp": 1765377746.2343423
+    },
+    {
+      "dashboard": "Strategies Dashboard",
+      "test": "Navigation",
+      "success": false,
+      "details": "Navigation elements found",
+      "timestamp": 1765377746.2343485
+    },
+    {
+      "dashboard": "Strategies Dashboard",
+      "test": "Action Buttons",
+      "success": false,
+      "details": "Interactive buttons found",
+      "timestamp": 1765377746.2343526
+    },
+    {
+      "dashboard": "Analytics Dashboard",
+      "test": "HTTP Status",
+      "success": true,
+      "details": "Status: 200",
+      "timestamp": 1765377746.2712274
+    },
+    {
+      "dashboard": "Analytics Dashboard",
+      "test": "Content Type",
+      "success": true,
+      "details": "Content-Type: text/html",
+      "timestamp": 1765377746.2712424
+    },
+    {
+      "dashboard": "Analytics Dashboard",
+      "test": "Content Length",
+      "success": false,
+      "details": "Length: 421 chars",
+      "timestamp": 1765377746.2713058
+    },
+    {
+      "dashboard": "Analytics Dashboard",
+      "test": "Vue Framework",
+      "success": false,
+      "details": "Vue.js detected",
+      "timestamp": 1765377746.27131
+    },
+    {
+      "dashboard": "Analytics Dashboard",
+      "test": "Analytics Elements",
+      "success": false,
+      "details": "Analytics content found",
+      "timestamp": 1765377746.271315
+    },
+    {
+      "dashboard": "Analytics Dashboard",
+      "test": "Navigation",
+      "success": false,
+      "details": "Navigation elements found",
+      "timestamp": 1765377746.2713184
+    },
+    {
+      "dashboard": "Analytics Dashboard",
+      "test": "Action Buttons",
+      "success": false,
+      "details": "Interactive buttons found",
+      "timestamp": 1765377746.2713213
+    },
+    {
+      "dashboard": "FreqAI Lab Dashboard",
+      "test": "HTTP Status",
+      "success": true,
+      "details": "Status: 200",
+      "timestamp": 1765377746.3136873
+    },
+    {
+      "dashboard": "FreqAI Lab Dashboard",
+      "test": "Content Type",
+      "success": true,
+      "details": "Content-Type: text/html",
+      "timestamp": 1765377746.3136947
+    },
+    {
+      "dashboard": "FreqAI Lab Dashboard",
+      "test": "Content Length",
+      "success": false,
+      "details": "Length: 421 chars",
+      "timestamp": 1765377746.3137481
+    },
+    {
+      "dashboard": "FreqAI Lab Dashboard",
+      "test": "Vue Framework",
+      "success": false,
+      "details": "Vue.js detected",
+      "timestamp": 1765377746.313754
+    },
+    {
+      "dashboard": "FreqAI Lab Dashboard",
+      "test": "Navigation",
+      "success": false,
+      "details": "Navigation elements found",
+      "timestamp": 1765377746.313758
+    },
+    {
+      "dashboard": "FreqAI Lab Dashboard",
+      "test": "Action Buttons",
+      "success": false,
+      "details": "Interactive buttons found",
+      "timestamp": 1765377746.3137605
+    },
+    {
+      "dashboard": "Data Management Dashboard",
+      "test": "HTTP Status",
+      "success": true,
+      "details": "Status: 200",
+      "timestamp": 1765377746.3312888
+    },
+    {
+      "dashboard": "Data Management Dashboard",
+      "test": "Content Type",
+      "success": true,
+      "details": "Content-Type: text/html",
+      "timestamp": 1765377746.331297
+    },
+    {
+      "dashboard": "Data Management Dashboard",
+      "test": "Content Length",
+      "success": false,
+      "details": "Length: 421 chars",
+      "timestamp": 1765377746.331354
+    },
+    {
+      "dashboard": "Data Management Dashboard",
+      "test": "Vue Framework",
+      "success": false,
+      "details": "Vue.js detected",
+      "timestamp": 1765377746.3313584
+    },
+    {
+      "dashboard": "Data Management Dashboard",
+      "test": "Navigation",
+      "success": false,
+      "details": "Navigation elements found",
+      "timestamp": 1765377746.3313627
+    },
+    {
+      "dashboard": "Data Management Dashboard",
+      "test": "Action Buttons",
+      "success": false,
+      "details": "Interactive buttons found",
+      "timestamp": 1765377746.3313653
+    },
+    {
+      "dashboard": "Hyperopt Dashboard",
+      "test": "HTTP Status",
+      "success": true,
+      "details": "Status: 200",
+      "timestamp": 1765377746.3487594
+    },
+    {
+      "dashboard": "Hyperopt Dashboard",
+      "test": "Content Type",
+      "success": true,
+      "details": "Content-Type: text/html",
+      "timestamp": 1765377746.3487673
+    },
+    {
+      "dashboard": "Hyperopt Dashboard",
+      "test": "Content Length",
+      "success": false,
+      "details": "Length: 421 chars",
+      "timestamp": 1765377746.348822
+    },
+    {
+      "dashboard": "Hyperopt Dashboard",
+      "test": "Vue Framework",
+      "success": false,
+      "details": "Vue.js detected",
+      "timestamp": 1765377746.3488266
+    },
+    {
+      "dashboard": "Hyperopt Dashboard",
+      "test": "Navigation",
+      "success": false,
+      "details": "Navigation elements found",
+      "timestamp": 1765377746.3488305
+    },
+    {
+      "dashboard": "Hyperopt Dashboard",
+      "test": "Action Buttons",
+      "success": false,
+      "details": "Interactive buttons found",
+      "timestamp": 1765377746.3488326
+    },
+    {
+      "dashboard": "Monitoring Dashboard",
+      "test": "HTTP Status",
+      "success": true,
+      "details": "Status: 200",
+      "timestamp": 1765377746.3665597
+    },
+    {
+      "dashboard": "Monitoring Dashboard",
+      "test": "Content Type",
+      "success": true,
+      "details": "Content-Type: text/html",
+      "timestamp": 1765377746.366567
+    },
+    {
+      "dashboard": "Monitoring Dashboard",
+      "test": "Content Length",
+      "success": false,
+      "details": "Length: 421 chars",
+      "timestamp": 1765377746.3666131
+    },
+    {
+      "dashboard": "Monitoring Dashboard",
+      "test": "Vue Framework",
+      "success": false,
+      "details": "Vue.js detected",
+      "timestamp": 1765377746.3666184
+    },
+    {
+      "dashboard": "Monitoring Dashboard",
+      "test": "Navigation",
+      "success": false,
+      "details": "Navigation elements found",
+      "timestamp": 1765377746.3666217
+    },
+    {
+      "dashboard": "Monitoring Dashboard",
+      "test": "Action Buttons",
+      "success": false,
+      "details": "Interactive buttons found",
+      "timestamp": 1765377746.3666236
+    },
+    {
+      "dashboard": "Audit Dashboard",
+      "test": "HTTP Status",
+      "success": true,
+      "details": "Status: 200",
+      "timestamp": 1765377746.3849714
+    },
+    {
+      "dashboard": "Audit Dashboard",
+      "test": "Content Type",
+      "success": true,
+      "details": "Content-Type: text/html",
+      "timestamp": 1765377746.3849797
+    },
+    {
+      "dashboard": "Audit Dashboard",
+      "test": "Content Length",
+      "success": false,
+      "details": "Length: 421 chars",
+      "timestamp": 1765377746.385031
+    },
+    {
+      "dashboard": "Audit Dashboard",
+      "test": "Vue Framework",
+      "success": false,
+      "details": "Vue.js detected",
+      "timestamp": 1765377746.3850355
+    },
+    {
+      "dashboard": "Audit Dashboard",
+      "test": "Navigation",
+      "success": false,
+      "details": "Navigation elements found",
+      "timestamp": 1765377746.38504
+    },
+    {
+      "dashboard": "Audit Dashboard",
+      "test": "Action Buttons",
+      "success": false,
+      "details": "Interactive buttons found",
+      "timestamp": 1765377746.3850448
+    },
+    {
+      "dashboard": "Login Dashboard",
+      "test": "HTTP Status",
+      "success": true,
+      "details": "Status: 200",
+      "timestamp": 1765377746.4035993
+    },
+    {
+      "dashboard": "Login Dashboard",
+      "test": "Content Type",
+      "success": true,
+      "details": "Content-Type: text/html",
+      "timestamp": 1765377746.4036071
+    },
+    {
+      "dashboard": "Login Dashboard",
+      "test": "Content Length",
+      "success": false,
+      "details": "Length: 421 chars",
+      "timestamp": 1765377746.4036543
+    },
+    {
+      "dashboard": "Login Dashboard",
+      "test": "Vue Framework",
+      "success": false,
+      "details": "Vue.js detected",
+      "timestamp": 1765377746.4036584
+    },
+    {
+      "dashboard": "Login Dashboard",
+      "test": "Login Elements",
+      "success": false,
+      "details": "Login form elements found",
+      "timestamp": 1765377746.403663
+    },
+    {
+      "dashboard": "Login Dashboard",
+      "test": "Navigation",
+      "success": false,
+      "details": "Navigation elements found",
+      "timestamp": 1765377746.4036658
+    },
+    {
+      "dashboard": "Login Dashboard",
+      "test": "Action Buttons",
+      "success": false,
+      "details": "Interactive buttons found",
+      "timestamp": 1765377746.403668
+    }
+  ]
+}

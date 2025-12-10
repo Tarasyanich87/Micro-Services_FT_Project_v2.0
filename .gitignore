@@ -1,0 +1,257 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+
+# Translations
+*.mo
+*.pot
+
+# Django stuff:
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+
+# Flask stuff:
+instance/
+.webassets-cache
+
+# Scrapy stuff:
+.scrapy
+
+# Sphinx documentation
+docs/_build/
+docs/build/
+
+# PyBuilder
+target/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# IPython
+profile_default/
+ipython_config.py
+
+# pyenv
+.python-version
+
+# pipenv
+Pipfile.lock
+
+# PEP 582; used by e.g. github.com/David-OConnor/pyflow
+__pypackages__/
+
+# Celery stuff
+celerybeat-schedule
+celerybeat.pid
+
+# SageMath parsed files
+*.sage.py
+
+# Environments
+.env
+.env.local
+.env.*.local
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Spyder project settings
+.spyderproject
+.spyproject
+
+# Rope project settings
+.ropeproject
+
+# mkdocs documentation
+/site
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre type checker
+.pyre/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Project specific
+logs/
+*.log
+*.pid
+temp_*/
+tmp/
+cache/
+*.sqlite
+*.db
+tradesv3*.sqlite*
+freqtrade.db
+test.db
+dump.rdb
+
+# Bot data (should not be committed)
+bots_data/
+bots_data/*/user_data/
+bots_data/*/logs/
+bots_data/*/tradesv3*.sqlite*
+bots_data/*/freqtrade.db
+bots_data/*/freqtrade.log
+bots_data/*/plots/
+bots_data/*/notebooks/
+bots_data/*/hyperopts/
+bots_data/*/freqaimodels/
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.npm
+.yarn-integrity
+
+# Frontend build artifacts
+dashboard-ui/dist/
+dashboard-ui/.nuxt/
+dashboard-ui/.output/
+freqtrade-ui/dist/
+freqtrade-ui/.nuxt/
+freqtrade-ui/.output/
+
+# Monitoring data
+monitoring/grafana/data/
+monitoring/prometheus/data/
+monitoring/loki/data/
+
+# Docker volumes
+docker/volumes/
+
+# Lock files
+uv.lock
+poetry.lock
+Pipfile.lock
+
+# Test artifacts
+.coverage
+htmlcov/
+.pytest_cache/
+.tox/
+.cache/
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*~
+
+# Secrets and keys
+privatekey
+publickey
+*.key
+*.pem
+wg0.conf
+cookies.txt
+
+# Database dumps
+*.sql
+*.dump
+
+# Git
+.git/
+.gitignore
+
+# CI/CD
+.github/
+
+# Documentation build
+docs/_build/
+docs/.doctrees/
+
+# Performance test results
+tests/performance/results/
+tests/performance/reports/
+
+# Integration test artifacts
+tests/integration/temp/
+tests/integration/cache/
+
+# E2E test screenshots/videos
+tests/e2e/screenshots/
+tests/e2e/videos/
+
+# Development notes
+NOTES.md
+TODO.md
+CHANGELOG.md
+
+# Backup files
+*.backup
+*.orig
+*.rej
+
+# System files
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*

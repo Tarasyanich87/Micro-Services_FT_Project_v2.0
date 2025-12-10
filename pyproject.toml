@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "freqtrade-multi-bot-system"
+version = "0.1.0"
+readme = "README.md"
+dependencies = [
+    "celery>=5.6.0",
+    "datasieve>=0.1.9",
+    "slowapi>=0.1.9",
+    "prometheus-fastapi-instrumentator>=7.0.0",
+    "structlog>=24.1.0",
+    "python-json-logger>=2.0.7",
+]
+
+[tool.setuptools]
+packages = ["management_server", "trading_gateway"]

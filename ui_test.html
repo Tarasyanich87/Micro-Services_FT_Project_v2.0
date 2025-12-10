@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Freqtrade UI Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 20px; border: 1px solid #ccc; }
+        .success { color: green; }
+        .error { color: red; }
+        button { padding: 10px 20px; margin: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Freqtrade UI Functionality Test</h1>
+
+    <div class="test-section">
+        <h2>Vue.js Status</h2>
+        <div id="vue-status">Checking Vue.js...</div>
+    </div>
+
+    <div class="test-section">
+        <h2>Router Status</h2>
+        <div id="router-status">Checking router...</div>
+        <div>Current route: <span id="current-route">-</span></div>
+    </div>
+
+    <div class="test-section">
+        <h2>API Connectivity</h2>
+        <div id="api-status">Testing API connection...</div>
+        <button onclick="testAPI()">Test API</button>
+    </div>
+
+    <div class="test-section">
+        <h2>Dashboard Navigation</h2>
+        <div id="nav-status">Testing navigation...</div>
+        <button onclick="testNavigation('/bots')">Go to Bots</button>
+        <button onclick="testNavigation('/strategies')">Go to Strategies</button>
+        <button onclick="testNavigation('/analytics')">Go to Analytics</button>
+    </div>
+
+    <div class="test-section">
+        <h2>CodeMirror Test</h2>
+        <div id="codemirror-status">CodeMirror not loaded</div>
+        <div id="codemirror-container" style="border: 1px solid #ccc; height: 200px;"></div>
+    </div>
+
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://unpkg.com/vue-router@4/dist/vue-router.global.js"></script>
+    <script src="https://unpkg.com/@codemirror/state@6/dist/index.js"></script>
+    <script src="https://unpkg.com/@codemirror/view@6/dist/index.js"></script>
+    <script src="https://unpkg.com/@codemirror/basic-setup@6/dist/index.js"></script>
+    <script src="https://unpkg.com/@codemirror/lang-python@6/dist/index.js"></script>
+
+    <script>
+        // Vue.js Test
+        const { createApp, ref } = Vue;
+
+        const app = createApp({
+            setup() {
+                const message = ref('Vue.js is working!');
+                return { message };
+            },
+            template: '<div>{{ message }}</div>'
+        });
+
+        app.mount('#vue-status');
+
+        // Router Test
+        const routes = [
+            { path: '/', component: { template: '<div>Home</div>' } },
+            { path: '/bots', component: { template: '<div>Bots Dashboard</div>' } },
+            { path: '/strategies', component: { template: '<div>Strategies Dashboard</div>' } },
+            { path: '/analytics', component: { template: '<div>Analytics Dashboard</div>' } },
+        ];
+
+        const router = VueRouter.createRouter({
+            history: VueRouter.createWebHistory(),
+            routes,
+        });
+
+        const routerApp = createApp({
+            template: '<div>Router is working! Current route: {{ $route.path }}</div>'
+        });
+
+        routerApp.use(router);
+        routerApp.mount('#router-status');
+
+        // Update current route display
+        router.afterEach((to) => {
+            document.getElementById('current-route').textContent = to.path;
+        });
+
+        // API Test
+        async function testAPI() {
+            const statusDiv = document.getElementById('api-status');
+            try {
+                const response = await fetch('http://localhost:8002/health');
+                if (response.ok) {
+                    const data = await response.json();
+                    statusDiv.innerHTML = '<span class="success">✅ API Connected: ' + data.service + ' (' + data.status + ')</span>';
+                } else {
+                    statusDiv.innerHTML = '<span class="error">❌ API Error: ' + response.status + '</span>';
+                }
+            } catch (error) {
+                statusDiv.innerHTML = '<span class="error">❌ API Connection Failed: ' + error.message + '</span>';
+            }
+        }
+
+        // Navigation Test
+        function testNavigation(path) {
+            const statusDiv = document.getElementById('nav-status');
+            try {
+                router.push(path);
+                statusDiv.innerHTML = '<span class="success">✅ Navigation to ' + path + ' successful</span>';
+            } catch (error) {
+                statusDiv.innerHTML = '<span class="error">❌ Navigation failed: ' + error.message + '</span>';
+            }
+        }
+
+        // CodeMirror Test
+        let editor = null;
+        try {
+            const { EditorState } = CodeMirror.state;
+            const { EditorView, basicSetup } = CodeMirror.view;
+            const { python } = CodeMirror.langPython;
+
+            const state = EditorState.create({
+                doc: "# Test Python code\nfrom freqtrade.strategy import IStrategy\n\nclass TestStrategy(IStrategy):\n    pass\n",
+                extensions: [basicSetup, python()]
+            });
+
+            editor = new EditorView({
+                state,
+                parent: document.getElementById('codemirror-container')
+            });
+
+            document.getElementById('codemirror-status').innerHTML = '<span class="success">✅ CodeMirror loaded successfully</span>';
+        } catch (error) {
+            document.getElementById('codemirror-status').innerHTML = '<span class="error">❌ CodeMirror failed: ' + error.message + '</span>';
+        }
+
+        // Auto-test API on load
+        setTimeout(testAPI, 1000);
+    </script>
+</body>
+</html>

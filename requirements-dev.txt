@@ -1,0 +1,6 @@
+celery[redis]==5.4.0
+pytest
+pytest-asyncio
+httpx
+aiosqlite
+uvloop
