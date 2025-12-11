@@ -11,8 +11,10 @@ class PredictionService:
     """Service for FreqAI model predictions"""
 
     def __init__(self, model_dir: str = "freqai_server/models"):
-        self.model_dir = Path(model_dir)
-        self.model_dir.mkdir(exist_ok=True)
+        # Use absolute path relative to project root
+        project_root = Path(__file__).parent.parent.parent
+        self.model_dir = project_root / model_dir
+        self.model_dir.mkdir(parents=True, exist_ok=True)
         self._model_cache = {}  # Cache loaded models
 
     async def load_model(self, model_name: str) -> Optional[Any]:

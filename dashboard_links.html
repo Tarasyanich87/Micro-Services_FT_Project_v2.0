@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Freqtrade Multi-Bot System - Dashboard Links</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; background: #f5f5f5; }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        h1 { color: #2c3e50; text-align: center; }
+        .service { margin: 15px 0; padding: 15px; border-left: 4px solid #3498db; background: #f8f9fa; }
+        .service h3 { margin: 0 0 10px 0; color: #2c3e50; }
+        .service p { margin: 5px 0; color: #7f8c8d; }
+        .status { display: inline-block; padding: 3px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; }
+        .status.healthy { background: #27ae60; color: white; }
+        .status.ok { background: #27ae60; color: white; }
+        a { color: #3498db; text-decoration: none; font-weight: bold; }
+        a:hover { text-decoration: underline; }
+        .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px; margin-top: 30px; }
+        .dashboard-item { background: #f8f9fa; padding: 15px; border-radius: 8px; border: 1px solid #e9ecef; }
+        .dashboard-item h4 { margin: 0 0 10px 0; color: #495057; }
+        .login-info { background: #e8f4f8; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #3498db; }
+        .login-info h3 { margin-top: 0; color: #2c3e50; }
+        .credentials { background: #f8f9fa; padding: 10px; border-radius: 4px; font-family: monospace; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Freqtrade Multi-Bot System</h1>
+        <p style="text-align: center; color: #7f8c8d;">Все сервисы успешно запущены и готовы к работе!</p>
+        
+        <div class="login-info">
+            <h3>🔐 Данные для входа</h3>
+            <p>Для доступа к дашбордам войдите с этими учетными данными:</p>
+            <div class="credentials">
+                Пользователь: <strong>analytics_user</strong><br>
+                Пароль: <strong>testpass123</strong>
+            </div>
+            <p><a href="http://localhost:5176/login" target="_blank">Открыть страницу входа</a></p>
+        </div>
+        
+        <div class="service">
+            <h3>🌐 Главный пользовательский интерфейс</h3>
+            <p><strong>URL:</strong> <a href="http://localhost:5176/" target="_blank">http://localhost:5176/</a></p>
+            <p><strong>Статус:</strong> <span class="status healthy">Работает</span></p>
+        </div>
+        
+        <div class="service">
+            <h3>🏢 Management Server (API Gateway)</h3>
+            <p><strong>URL:</strong> <a href="http://localhost:8002/" target="_blank">http://localhost:8002/</a></p>
+            <p><strong>API Docs:</strong> <a href="http://localhost:8002/docs" target="_blank">http://localhost:8002/docs</a></p>
+            <p><strong>Статус:</strong> <span class="status healthy">Работает</span></p>
+        </div>
+        
+        <div class="service">
+            <h3>🤖 Trading Gateway (Bot Execution)</h3>
+            <p><strong>URL:</strong> <a href="http://localhost:8001/" target="_blank">http://localhost:8001/</a></p>
+            <p><strong>API Docs:</strong> <a href="http://localhost:8001/docs" target="_blank">http://localhost:8001/docs</a></p>
+            <p><strong>Статус:</strong> <span class="status ok">Работает</span></p>
+        </div>
+        
+        <div class="service">
+            <h3>📊 Backtesting Server</h3>
+            <p><strong>URL:</strong> <a href="http://localhost:8003/" target="_blank">http://localhost:8003/</a></p>
+            <p><strong>API Docs:</strong> <a href="http://localhost:8003/docs" target="_blank">http://localhost:8003/docs</a></p>
+            <p><strong>Статус:</strong> <span class="status healthy">Работает</span></p>
+        </div>
+        
+        <div class="service">
+            <h3>🧠 FreqAI Server (ML Models)</h3>
+            <p><strong>URL:</strong> <a href="http://localhost:8004/" target="_blank">http://localhost:8004/</a></p>
+            <p><strong>API Docs:</strong> <a href="http://localhost:8004/docs" target="_blank">http://localhost:8004/docs</a></p>
+            <p><strong>Статус:</strong> <span class="status healthy">Работает</span></p>
+        </div>
+        
+        <h2 style="margin-top: 40px; color: #2c3e50;">📋 Дашборды пользовательского интерфейса</h2>
+        <p style="color: #7f8c8d;">После входа в систему будут доступны следующие дашборды:</p>
+        <div class="dashboard-grid">
+            <div class="dashboard-item">
+                <h4>🏠 Home Dashboard</h4>
+                <a href="http://localhost:5176/" target="_blank">Открыть</a>
+                <p>Главная панель с обзором системы</p>
+            </div>
+            <div class="dashboard-item">
+                <h4>🤖 Bot Management</h4>
+                <a href="http://localhost:5176/bots" target="_blank">Открыть</a>
+                <p>Управление торговыми ботами</p>
+            </div>
+            <div class="dashboard-item">
+                <h4>📈 Strategies</h4>
+                <a href="http://localhost:5176/strategies" target="_blank">Открыть</a>
+                <p>Управление торговыми стратегиями</p>
+            </div>
+            <div class="dashboard-item">
+                <h4>📊 Analytics</h4>
+                <a href="http://localhost:5176/analytics" target="_blank">Открыть</a>
+                <p>Аналитика и метрики производительности</p>
+            </div>
+            <div class="dashboard-item">
+                <h4>🧠 FreqAI Lab</h4>
+                <a href="http://localhost:5176/freqai-lab" target="_blank">Открыть</a>
+                <p>Машинное обучение и предсказания</p>
+            </div>
+            <div class="dashboard-item">
+                <h4>💾 Data Management</h4>
+                <a href="http://localhost:5176/data" target="_blank">Открыть</a>
+                <p>Управление рыночными данными</p>
+            </div>
+            <div class="dashboard-item">
+                <h4>🎯 Hyperopt</h4>
+                <a href="http://localhost:5176/hyperopt" target="_blank">Открыть</a>
+                <p>Оптимизация параметров стратегий</p>
+            </div>
+            <div class="dashboard-item">
+                <h4>📡 Monitoring</h4>
+                <a href="http://localhost:5176/monitoring" target="_blank">Открыть</a>
+                <p>Мониторинг системы</p>
+            </div>
+            <div class="dashboard-item">
+                <h4>📋 Audit Logs</h4>
+                <a href="http://localhost:5176/audit" target="_blank">Открыть</a>
+                <p>Журнал аудита действий</p>
+            </div>
+        </div>
+        
+        <div style="margin-top: 40px; padding: 20px; background: #e8f4f8; border-radius: 8px;">
+            <h3 style="margin-top: 0; color: #2c3e50;">💡 Информация для разработчиков</h3>
+            <p><strong>Redis:</strong> localhost:6379 - <span class="status healthy">Работает</span></p>
+            <p><strong>База данных:</strong> SQLite (freqtrade.db)</p>
+            <p><strong>Логи:</strong> Проверьте *.log файлы в корневой директории проекта</p>
+            <p><strong>Остановка сервисов:</strong> Используйте <code>./stop_services.sh</code> или <code>pkill -f uvicorn</code></p>
+        </div>
+    </div>
+</body>
+</html>

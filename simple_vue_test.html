@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Vue Test</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://unpkg.com/vue-router@4/dist/vue-router.global.js"></script>
+</head>
+<body>
+    <div id="app">
+        <nav>
+            <router-link to="/">Home</router-link> |
+            <router-link to="/bots">Bots</router-link> |
+            <router-link to="/login">Login</router-link>
+        </nav>
+        
+        <router-view></router-view>
+    </div>
+
+    <script>
+        const { createApp } = Vue;
+        const { createRouter, createWebHistory } = VueRouter;
+
+        const Home = { template: '<div><h1>Home Page</h1><p>Welcome to the home page!</p></div>' };
+        const Bots = { template: '<div><h1>Bots Page</h1><p>This is the bots management page.</p></div>' };
+        const Login = { template: '<div><h1>Login Page</h1><p>Please log in to continue.</p></div>' };
+
+        const routes = [
+            { path: '/', component: Home },
+            { path: '/bots', component: Bots },
+            { path: '/login', component: Login }
+        ];
+
+        const router = createRouter({
+            history: createWebHistory(),
+            routes
+        });
+
+        const app = createApp({});
+        app.use(router);
+        app.mount('#app');
+        
+        console.log('Simple Vue Router app initialized');
+    </script>
+</body>
+</html>

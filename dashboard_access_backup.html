@@ -146,7 +146,7 @@
 <body>
     <div class="container">
         <h1>🤖 Freqtrade Multi-Bot System</h1>
-        <p class="subtitle">4-Service Microservices Architecture - Enterprise-grade trading bot management platform</p>
+        <p class="subtitle">Enterprise-grade trading bot management platform</p>
 
         <div class="status-grid">
             <div class="status-card">
@@ -162,20 +162,6 @@
                 <p>WebSocket: Active</p>
             </div>
             <div class="status-card">
-                <h3>✅ Backtesting Server</h3>
-                <p>Port: 8003</p>
-                <p>Status: Running</p>
-                <p>Celery Tasks: Active</p>
-                <p>Hyperopt: Ready</p>
-            </div>
-            <div class="status-card">
-                <h3>✅ FreqAI Server</h3>
-                <p>Port: 8004</p>
-                <p>Status: Running</p>
-                <p>ML Models: Ready</p>
-                <p>Predictions: Active</p>
-            </div>
-            <div class="status-card">
                 <h3>✅ Redis Streams</h3>
                 <p>Port: 6379</p>
                 <p>Status: Running</p>
@@ -187,12 +173,6 @@
                 <p>Status: Running</p>
                 <p>Dashboards: 10</p>
             </div>
-        </div>
-
-        <div style="background: rgba(52, 152, 219, 0.1); border-radius: 15px; padding: 20px; margin-bottom: 30px; border-left: 4px solid #3498db;">
-            <h2 style="margin-top: 0; color: #2c3e50;">🏗️ Архитектура системы</h2>
-            <p><strong>4 микросервиса:</strong> Management Server (API Gateway) → Trading Gateway (Bot Execution) → Backtesting Server (Optimization) → FreqAI Server (ML Models)</p>
-            <p><strong>Инфраструктура:</strong> Redis Streams (Event Bus) • PostgreSQL (Data) • Celery (Tasks) • Vue.js UI</p>
         </div>
 
         <h2 style="text-align: center; margin-bottom: 30px;">📊 Доступ к дашбордам</h2>
@@ -272,19 +252,14 @@
         <div class="test-section">
             <h2>🧪 Тестирование системы</h2>
             <p>Используйте эти ссылки для комплексного тестирования функциональности:</p>
-            <a href="http://localhost:8002/docs" class="test-button" target="_blank">📖 Management API</a>
-            <a href="http://localhost:8001/docs" class="test-button" target="_blank">🤖 Trading Gateway API</a>
-            <a href="http://localhost:8003/docs" class="test-button" target="_blank">📊 Backtesting API</a>
-            <a href="http://localhost:8004/docs" class="test-button" target="_blank">🧠 FreqAI API</a>
-            <br>
+            <a href="http://localhost:8002/docs" class="test-button" target="_blank">📖 API Documentation</a>
+            <a href="http://localhost:8001/docs" class="test-button" target="_blank">🔗 Trading Gateway API</a>
             <a href="ui_test.html" class="test-button" target="_blank">🧪 UI Test Page</a>
-            <a href="http://localhost:8002/health" class="test-button" target="_blank">💚 Health Checks</a>
-            <a href="http://localhost:8002/api/v1/monitoring/monitoring/status" class="test-button" target="_blank">📈 System Status</a>
+            <a href="http://localhost:8002/health" class="test-button" target="_blank">💚 Health Check</a>
         </div>
 
         <div class="footer">
-            <p>🚀 Freqtrade Multi-Bot Management System v1.0 - 4 Services Architecture</p>
-            <p>Management Server • Trading Gateway • Backtesting Server • FreqAI Server</p>
+            <p>🚀 Freqtrade Multi-Bot Management System v1.0</p>
             <p>Production Ready • Enterprise Grade • Fully Tested</p>
         </div>
     </div>
@@ -297,22 +272,13 @@
 
         // Auto-refresh status every 30 seconds
         setInterval(async () => {
-            const services = [
-                { name: 'Management Server', url: 'http://localhost:8002/health' },
-                { name: 'Trading Gateway', url: 'http://localhost:8001/health' },
-                { name: 'Backtesting Server', url: 'http://localhost:8003/health' },
-                { name: 'FreqAI Server', url: 'http://localhost:8004/health' }
-            ];
-
-            for (const service of services) {
-                try {
-                    const response = await fetch(service.url);
-                    if (!response.ok) {
-                        console.warn(`${service.name} health check failed`);
-                    }
-                } catch (error) {
-                    console.error(`${service.name} health check error:`, error);
+            try {
+                const response = await fetch('http://localhost:8002/health');
+                if (!response.ok) {
+                    console.warn('Management Server health check failed');
                 }
+            } catch (error) {
+                console.error('Health check error:', error);
             }
         }, 30000);
 

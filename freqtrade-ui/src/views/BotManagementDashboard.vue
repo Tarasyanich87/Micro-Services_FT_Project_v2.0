@@ -186,10 +186,11 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import type { Bot } from '@/types/api'
 
 // Reactive data
-const bots = ref<Bot[]>([])
+const bots = ref<any[]>([])
+const strategies = ref<string[]>([])
+const freqaiModels = ref<any[]>([])
 const loading = ref(true)
 const bulkActionLoading = ref(false)
 const saveLoading = ref(false)
@@ -224,7 +225,8 @@ const loadData = async () => {
     // Load strategies
     const strategiesResponse = await fetch('/api/v1/strategies/')
     if (strategiesResponse.ok) {
-      strategies.value = await strategiesResponse.json()
+      const strategiesData = await strategiesResponse.json()
+      strategies.value = strategiesData.map((s: any) => s.name)
     }
 
     // Load FreqAI models
@@ -241,6 +243,7 @@ const loadData = async () => {
 }
 
 const toggleBot = async (bot: any) => {
+  const actionLoading = ref<Record<number, boolean>>({})
   if (actionLoading.value[bot.id]) return
 
   actionLoading.value[bot.id] = true
@@ -708,3 +711,4 @@ onMounted(() => {
   }
 }
 </style>
+

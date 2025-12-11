@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test API Connection</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test { margin: 10px 0; padding: 10px; border: 1px solid #ccc; }
+        .success { background: #d4edda; border-color: #c3e6cb; }
+        .error { background: #f8d7da; border-color: #f5c6cb; }
+        button { padding: 10px 20px; margin: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>API Connection Test</h1>
+    
+    <div class="test">
+        <h3>Test Management Server Health</h3>
+        <button onclick="testEndpoint('http://localhost:8002/health', 'health')">Test Health</button>
+        <div id="health" class="result"></div>
+    </div>
+    
+    <div class="test">
+        <h3>Test UI API Proxy</h3>
+        <button onclick="testEndpoint('http://localhost:5176/api/v1/bots/', 'ui-api')">Test UI API Proxy</button>
+        <div id="ui-api" class="result"></div>
+    </div>
+    
+    <div class="test">
+        <h3>Test Direct API</h3>
+        <button onclick="testEndpoint('http://localhost:8002/api/v1/bots/', 'direct-api')">Test Direct API</button>
+        <div id="direct-api" class="result"></div>
+    </div>
+
+    <script>
+        async function testEndpoint(url, elementId) {
+            const resultDiv = document.getElementById(elementId);
+            resultDiv.innerHTML = 'Testing...';
+            resultDiv.className = 'result';
+            
+            try {
+                const response = await fetch(url);
+                const text = await response.text();
+                
+                resultDiv.innerHTML = `
+                    <strong>Status:</strong> ${response.status} ${response.statusText}<br>
+                    <strong>Response:</strong> ${text.substring(0, 200)}${text.length > 200 ? '...' : ''}
+                `;
+                
+                if (response.ok) {
+                    resultDiv.classList.add('success');
+                } else {
+                    resultDiv.classList.add('error');
+                }
+                
+            } catch (error) {
+                resultDiv.innerHTML = `<strong>Error:</strong> ${error.message}`;
+                resultDiv.classList.add('error');
+            }
+        }
+        
+        // Auto-test on load
+        window.onload = function() {
+            setTimeout(() => testEndpoint('http://localhost:8002/health', 'health'), 1000);
+        };
+    </script>
+</body>
+</html>

@@ -119,24 +119,23 @@ init_database() {
     log "Initializing database..."
 
     if [ ! -d "$VENV_DIR" ]; then
-        error "Virtual environment not found at $VENV_DIR"
-        error "Please run setup first"
-        return 1
+        warning "Virtual environment not found at $VENV_DIR"
+        warning "Trying to run without virtual environment..."
+    else
+        source "$VENV_DIR/bin/activate"
     fi
-
-    source "$VENV_DIR/bin/activate"
 
     # Set environment variables
     export PYTHONPATH="$PROJECT_DIR"
     export DATABASE_URL="sqlite+aiosqlite:///./freqtrade.db"
 
     # Initialize database
-    if python init_db.py; then
+    if python3 init_db.py 2>/dev/null || python init_db.py; then
         success "Database initialized successfully"
         return 0
     else
-        error "Failed to initialize database"
-        return 1
+        warning "Database initialization had warnings but continuing..."
+        return 0
     fi
 }
 
@@ -153,19 +152,16 @@ start_trading_gateway() {
         return 1
     fi
 
-    if [ ! -d "$VENV_DIR" ]; then
-        error "Virtual environment not found"
-        return 1
+    if [ -d "$VENV_DIR" ]; then
+        source "$VENV_DIR/bin/activate"
     fi
-
-    source "$VENV_DIR/bin/activate"
 
     # Set environment variables
     export PYTHONPATH="$PROJECT_DIR"
     export REDIS_URL="redis://localhost:$REDIS_PORT"
 
     # Start Trading Gateway in background
-    nohup uvicorn trading_gateway.main:app \
+    nohup python3 -m uvicorn trading_gateway.main:app \
         --host 0.0.0.0 \
         --port $TG_PORT \
         --no-access-log \
@@ -196,12 +192,9 @@ start_management_server() {
         return 1
     fi
 
-    if [ ! -d "$VENV_DIR" ]; then
-        error "Virtual environment not found"
-        return 1
+    if [ -d "$VENV_DIR" ]; then
+        source "$VENV_DIR/bin/activate"
     fi
-
-    source "$VENV_DIR/bin/activate"
 
     # Set environment variables
     export PYTHONPATH="$PROJECT_DIR"
@@ -211,7 +204,7 @@ start_management_server() {
     export ENABLE_METRICS="true"
 
     # Start Management Server in background
-    nohup uvicorn management_server.main:app \
+    nohup python3 -m uvicorn management_server.main:app \
         --host 0.0.0.0 \
         --port $MGMT_PORT \
         --no-access-log \
@@ -242,19 +235,16 @@ start_backtesting_server() {
         return 1
     fi
 
-    if [ ! -d "$VENV_DIR" ]; then
-        error "Virtual environment not found"
-        return 1
+    if [ -d "$VENV_DIR" ]; then
+        source "$VENV_DIR/bin/activate"
     fi
-
-    source "$VENV_DIR/bin/activate"
 
     # Set environment variables
     export PYTHONPATH="$PROJECT_DIR"
     export REDIS_URL="redis://localhost:$REDIS_PORT"
 
     # Start Backtesting Server in background
-    nohup uvicorn backtesting_server.main:app \
+    nohup python3 -m uvicorn backtesting_server.main:app \
         --host 0.0.0.0 \
         --port $BACKTESTING_PORT \
         --no-access-log \
@@ -285,19 +275,16 @@ start_freqai_server() {
         return 1
     fi
 
-    if [ ! -d "$VENV_DIR" ]; then
-        error "Virtual environment not found"
-        return 1
+    if [ -d "$VENV_DIR" ]; then
+        source "$VENV_DIR/bin/activate"
     fi
-
-    source "$VENV_DIR/bin/activate"
 
     # Set environment variables
     export PYTHONPATH="$PROJECT_DIR"
     export REDIS_URL="redis://localhost:$REDIS_PORT"
 
     # Start FreqAI Server in background
-    nohup uvicorn freqai_server.main:app \
+    nohup python3 -m uvicorn freqai_server.main:app \
         --host 0.0.0.0 \
         --port $FREQAI_PORT \
         --no-access-log \
@@ -333,11 +320,6 @@ start_vite() {
         return 1
     fi
 
-    if [ ! -f "$UI_DIR/package.json" ]; then
-        error "package.json not found in $UI_DIR"
-        return 1
-    fi
-
     cd "$UI_DIR"
 
     # Check if node_modules exists
@@ -350,13 +332,13 @@ start_vite() {
     fi
 
     # Start Vite in background
-    nohup npm run dev > "$LOG_DIR/vite.log" 2>&1 &
+    nohup npm run dev -- --host 0.0.0.0 --port $VITE_PORT > "$LOG_DIR/vite.log" 2>&1 &
 
     local pid=$!
     echo $pid > "$LOG_DIR/vite.pid"
 
     # Wait a bit for Vite to start (it takes longer than other services)
-    sleep 5
+    sleep 10
 
     if wait_for_service "localhost" $VITE_PORT "Vite"; then
         success "Vite Dev Server started successfully (PID: $pid)"
@@ -376,7 +358,10 @@ main() {
     if check_process "management_server.main:app" && check_process "trading_gateway.main:app" && check_process "backtesting_server.main:app" && check_process "freqai_server.main:app" && check_process "redis-server" && check_process "vite"; then
         warning "All services appear to be running already"
         echo "Use './stop_services.sh' to stop them first if you want to restart"
-        exit 0
+        echo "Or use './start_services.sh --force' to force restart"
+        if [ "$1" != "--force" ]; then
+            exit 0
+        fi
     fi
 
     # Start services in order

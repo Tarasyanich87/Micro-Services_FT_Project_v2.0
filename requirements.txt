@@ -1,4 +1,6 @@
-numpy==2.3.4
+# Core dependencies
+setuptools>=60.9.0
+numpy==2.3.5
 pandas==2.3.3
 bottleneck==1.6.0
 numexpr==2.14.1
@@ -7,7 +9,7 @@ ft-pandas-ta==0.3.16
 ta-lib==0.6.8
 technical==1.5.3
 
-ccxt==4.5.12
+# ccxt==4.5.12  # Removed due to version conflict
 cryptography==46.0.3
 aiohttp==3.13.1
 SQLAlchemy==2.0.44
@@ -45,7 +47,7 @@ pyjwt==2.10.1
 aiofiles==25.1.0
 argon2-cffi==25.1.0
 psutil==7.1.1
-scikit-learn==1.5.0
+scikit-learn==1.8.0
 
 # Building config files interactively
 questionary==2.1.1
@@ -68,8 +70,28 @@ pydantic-settings==2.7.1
 aiosqlite==0.20.0
 email-validator==2.2.0
 python-multipart==0.0.9
+
+# Redis and Celery
 redis==5.0.7
 celery[redis]==5.4.0
+
+# Authentication
 argon2-cffi
-ccxt
+pyjwt==2.10.1
+
+# External APIs
+ccxt==4.5.26
 pycoingecko==3.2.0
+
+# Monitoring and Metrics
+prometheus-fastapi-instrumentator==7.1.0
+psutil==7.1.1
+
+# DNS Resolution (specific version for compatibility)
+aiodns==3.0.0
+
+# Development and Testing (optional)
+# pytest>=7.0.0
+# black>=22.0.0
+# flake8>=4.0.0
+# mypy>=1.0.0

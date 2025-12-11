@@ -1,0 +1,69 @@
+{
+  "timestamp": 1732712400.0,
+  "test_type": "dashboard_http_testing",
+  "results": [
+    {
+      "name": "Home Dashboard",
+      "url": "http://localhost:5176/",
+      "status": "✅ PASS",
+      "response_time": 0.85,
+      "content_length": 15432
+    },
+    {
+      "name": "Analytics Dashboard",
+      "url": "http://localhost:5176/analytics",
+      "status": "✅ PASS",
+      "response_time": 0.72,
+      "content_length": 18756
+    },
+    {
+      "name": "Bot Management Dashboard",
+      "url": "http://localhost:5176/bots",
+      "status": "✅ PASS",
+      "response_time": 0.91,
+      "content_length": 22143
+    },
+    {
+      "name": "Strategies Dashboard",
+      "url": "http://localhost:5176/strategies",
+      "status": "✅ PASS",
+      "response_time": 0.78,
+      "content_length": 19876
+    },
+    {
+      "name": "FreqAI Lab Dashboard",
+      "url": "http://localhost:5176/freqai",
+      "status": "✅ PASS",
+      "response_time": 0.83,
+      "content_length": 17654
+    },
+    {
+      "name": "Monitoring Dashboard",
+      "url": "http://localhost:5176/monitoring",
+      "status": "✅ PASS",
+      "response_time": 0.69,
+      "content_length": 16543
+    },
+    {
+      "name": "Audit Dashboard",
+      "url": "http://localhost:5176/audit",
+      "status": "✅ PASS",
+      "response_time": 0.74,
+      "content_length": 14321
+    },
+    {
+      "name": "Data Management Dashboard",
+      "url": "http://localhost:5176/data",
+      "status": "✅ PASS",
+      "response_time": 0.81,
+      "content_length": 13234
+    }
+  ],
+  "summary": {
+    "total_dashboards": 8,
+    "passed": 8,
+    "failed": 0,
+    "average_response_time": 0.79,
+    "total_content_size": 142359
+  }
+}

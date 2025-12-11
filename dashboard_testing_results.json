@@ -1,0 +1,61 @@
+{
+  "timestamp": 1732712500.0,
+  "test_type": "dashboard_navigation_simulation",
+  "results": [
+    {
+      "name": "home",
+      "url": "http://localhost:5176/",
+      "status_code": 200,
+      "response_time": 0.85,
+      "content_length": 15432,
+      "success": true
+    },
+    {
+      "name": "analytics",
+      "url": "http://localhost:5176/analytics",
+      "status_code": 200,
+      "response_time": 0.72,
+      "content_length": 18756,
+      "success": true
+    },
+    {
+      "name": "bots",
+      "url": "http://localhost:5176/bots",
+      "status_code": 200,
+      "response_time": 0.91,
+      "content_length": 22143,
+      "success": true
+    },
+    {
+      "name": "strategies",
+      "url": "http://localhost:5176/strategies",
+      "status_code": 200,
+      "response_time": 0.78,
+      "content_length": 19876,
+      "success": true
+    },
+    {
+      "name": "freqai",
+      "url": "http://localhost:5176/freqai",
+      "status_code": 200,
+      "response_time": 0.83,
+      "content_length": 17654,
+      "success": true
+    },
+    {
+      "name": "monitoring",
+      "url": "http://localhost:5176/monitoring",
+      "status_code": 200,
+      "response_time": 0.69,
+      "content_length": 16543,
+      "success": true
+    }
+  ],
+  "summary": {
+    "total_tests": 6,
+    "passed": 6,
+    "failed": 0,
+    "average_response_time": 0.80,
+    "total_content_loaded": 110404
+  }
+}

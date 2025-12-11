@@ -4,9 +4,7 @@
       <nav>
         <router-link to="/">Home</router-link>
         <router-link to="/bots">Bots</router-link>
-        <router-link to="/strategies">Strategies</router-link>
-        <router-link to="/analytics">Analytics</router-link>
-        <router-link to="/audit">Audit</router-link>
+        <router-link to="/login">Login</router-link>
       </nav>
     </header>
     <main class="content">
@@ -17,13 +15,10 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue'
-import { useAuthStore } from '@/stores/auth'
-
-const authStore = useAuthStore()
 
 onMounted(() => {
-  document.title = 'Freqtrade UI'
-  console.log('App mounted, token:', authStore.token)
+  document.title = 'Freqtrade UI - Test'
+  console.log('App mounted successfully')
 })
 </script>
 

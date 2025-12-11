@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Vue App</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+</head>
+<body>
+    <div id="app">
+        <h1>Vue Test - {{ message }}</h1>
+        <button @click="changeMessage">Change Message</button>
+        <p>Current route: {{ $route ? $route.path : 'No router' }}</p>
+    </div>
+
+    <script>
+        const { createApp } = Vue;
+
+        const app = createApp({
+            data() {
+                return {
+                    message: 'Hello from Vue!'
+                }
+            },
+            methods: {
+                changeMessage() {
+                    this.message = 'Message changed!';
+                }
+            }
+        });
+
+        app.mount('#app');
+        
+        console.log('Vue app initialized successfully');
+    </script>
+</body>
+</html>

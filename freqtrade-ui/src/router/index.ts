@@ -1,5 +1,4 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { useAuthStore } from '@/stores/auth'
 
 const routes = [
   {
@@ -25,30 +24,12 @@ const routes = [
     component: () => import('@/views/StrategiesDashboard.vue'),
     meta: { requiresAuth: true },
   },
-  // {
-  //   path: '/backtesting',
-  //   name: 'Backtesting',
-  //   component: () => import('@/views/BacktestingView.vue'),
-  //   meta: { requiresAuth: true },
-  // },
   {
     path: '/analytics',
     name: 'Analytics',
     component: () => import('@/views/AnalyticsDashboard.vue'),
     meta: { requiresAuth: true },
   },
-  // {
-  //   path: '/monitoring',
-  //   name: 'SystemMonitoring',
-  //   component: () => import('@/views/SystemMonitoringView.vue'),
-  //   meta: { requiresAuth: true },
-  // },
-  // {
-  //   path: '/features',
-  //   name: 'FeatureFlags',
-  //   component: () => import('@/views/FeatureFlagsView.vue'),
-  //   meta: { requiresAuth: true },
-  // },
   {
     path: '/freqai-lab',
     name: 'FreqAILab',
@@ -61,7 +42,6 @@ const routes = [
     component: () => import('@/views/DataManagementDashboard.vue'),
     meta: { requiresAuth: true },
   },
-
   {
     path: '/hyperopt',
     name: 'Hyperopt',
@@ -83,12 +63,12 @@ const routes = [
 ]
 
 const router = createRouter({
-  history: createWebHashHistory(),
+  history: createWebHistory(),
   routes
 })
 
 router.beforeEach((to, from, next) => {
-  // Check token in localStorage directly to avoid store initialization issues
+  // Check token in localStorage directly
   const token = localStorage.getItem('auth') ? JSON.parse(localStorage.getItem('auth') || '{}').token : null
   if (to.meta.requiresAuth && !token) {
     next('/login')

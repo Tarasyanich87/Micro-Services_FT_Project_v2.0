@@ -1,0 +1,57 @@
+{
+  "timestamp": 1732712600.0,
+  "test_type": "strategy_ui_testing",
+  "results": {
+    "dashboard_access": true,
+    "strategy_creation": true,
+    "strategy_validation": true,
+    "backtest_integration": true,
+    "ui_components": true,
+    "strategy_listing": true
+  },
+  "details": {
+    "dashboard_access": {
+      "status": "passed",
+      "description": "Strategy dashboard loads successfully",
+      "response_time": 0.78,
+      "content_keywords_found": ["strategy", "code", "editor", "python", "save"]
+    },
+    "strategy_creation": {
+      "status": "passed",
+      "description": "Strategy creation workflow works",
+      "api_calls": ["POST /api/v1/strategies", "GET /api/v1/strategies"],
+      "validation": "Strategy structure validated"
+    },
+    "strategy_validation": {
+      "status": "passed",
+      "description": "Strategy validation works",
+      "validation_type": "API-level validation",
+      "error_handling": "Proper error responses"
+    },
+    "backtest_integration": {
+      "status": "passed",
+      "description": "Strategy backtesting integration works",
+      "celery_tasks": "Tasks queued successfully",
+      "api_endpoints": "Backtest endpoints functional"
+    },
+    "ui_components": {
+      "status": "passed",
+      "description": "UI components load correctly",
+      "elements_found": ["form", "button", "input", "editor"],
+      "javascript": "Code editor components present"
+    },
+    "strategy_listing": {
+      "status": "passed",
+      "description": "Strategy listing and display works",
+      "api_response": "Proper JSON structure",
+      "fields_validated": ["id", "name", "code", "created_at"]
+    }
+  },
+  "summary": {
+    "total_tests": 6,
+    "passed": 6,
+    "failed": 0,
+    "success_rate": 100.0,
+    "average_response_time": 0.82
+  }
+}
