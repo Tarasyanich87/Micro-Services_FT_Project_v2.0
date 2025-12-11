@@ -156,6 +156,44 @@ class RedisStreamsConfig:
         return list(cls.STREAM_LIMITS.keys())
 
     @classmethod
+    def get_priority_streams(cls) -> Dict[str, list[str]]:
+        """Get streams organized by priority levels."""
+        return {
+            "critical": [
+                "mgmt:trading:emergency",  # Emergency stop commands
+                "system:alerts",  # System alerts
+            ],
+            "high": [
+                cls.MGMT_TRADING_COMMANDS,  # Trading commands
+                cls.MGMT_BACKTESTING_COMMANDS,  # Backtesting commands
+            ],
+            "normal": [
+                cls.MGMT_FREQAI_COMMANDS,  # FreqAI commands
+                cls.SYSTEM_EVENTS,  # System events
+                cls.AUDIT_EVENTS,  # Audit events
+            ],
+            "low": [
+                cls.MONITORING_EVENTS,  # Monitoring data
+                cls.SYSTEM_HEALTH,  # Health status
+            ],
+        }
+
+    @classmethod
+    def get_stream_priority(cls, stream_name: str) -> str:
+        """Get priority level for a stream."""
+        priority_streams = cls.get_priority_streams()
+        for priority, streams in priority_streams.items():
+            if stream_name in streams:
+                return priority
+        return "normal"  # Default priority
+
+    @classmethod
+    def get_priority_weight(cls, priority: str) -> int:
+        """Get numeric weight for priority (higher = more urgent)."""
+        weights = {"critical": 100, "high": 75, "normal": 50, "low": 25}
+        return weights.get(priority, 50)
+
+    @classmethod
     def validate_stream_name(cls, stream_name: str) -> bool:
         """Validate that a stream name follows the naming convention."""
         parts = stream_name.split(":")

@@ -9,7 +9,7 @@ import asyncio
 import json
 import logging
 import time
-from typing import Any, Callable, Dict, Optional
+from typing import Any, Callable, Dict, List, Optional, Tuple
 
 import redis.asyncio as redis
 from pydantic import BaseModel, Field
@@ -25,6 +25,7 @@ class EventMessage(BaseModel):
     source: str
     timestamp: float = Field(default_factory=time.time)
     version: int = 1
+    priority: str = "normal"  # critical, high, normal, low
 
     def to_redis_dict(self) -> Dict[str, str]:
         """Serializes the event message for storage in Redis."""
@@ -72,24 +73,264 @@ class RedisStreamsEventBus:
         logger.info(f"🔌 Event bus disconnected for service: {self.service_name}")
 
     async def publish(
-        self, stream_name: str, event_data: Dict[str, Any], event_type: str
+        self,
+        stream_name: str,
+        event_data: Dict[str, Any],
+        event_type: str,
+        priority: Optional[str] = None,
     ):
-        """Publish an event to a specific Redis stream."""
+        """Publish an event to a specific Redis stream with optional priority."""
         if not self.redis:
             logger.warning("Cannot publish event, Redis is not connected.")
             return
 
         try:
+            # Determine priority if not specified
+            if priority is None:
+                from shared.config.redis_streams import redis_streams_config
+
+                priority = (
+                    redis_streams_config.get_stream_priority(stream_name) or "normal"
+                )
+
+            # Determine if this is a critical message that needs immediate processing
+            is_critical = (
+                priority == "critical"
+                or event_type in ["EMERGENCY_STOP", "SYSTEM_ALERT", "CRITICAL_ALERT"]
+                or "CRITICAL" in event_type
+            )
+
             event = EventMessage(
-                type=event_type, data=event_data, source=self.service_name
+                type=event_type,
+                data=event_data,
+                source=self.service_name,
+                priority=priority,
             )
             message_dict = event.to_redis_dict()
-            message_id = await self.redis.xadd(stream_name, message_dict)  # type: ignore[arg-type]
-            logger.debug(
-                f"📤 Published '{event_type}' to {stream_name} (ID: {message_id})"
-            )
+
+            # For critical messages, use a special stream suffix
+            if is_critical:
+                critical_stream = f"{stream_name}:critical"
+                message_id = await self.redis.xadd(critical_stream, message_dict)  # type: ignore[arg-type]
+                logger.info(
+                    f"🚨 CRITICAL: Published '{event_type}' to {critical_stream} (ID: {message_id})"
+                )
+            else:
+                message_id = await self.redis.xadd(stream_name, message_dict)  # type: ignore[arg-type]
+                logger.debug(
+                    f"📤 Published '{event_type}' to {stream_name} (ID: {message_id}, priority: {priority})"
+                )
+
         except redis.RedisError as e:
             logger.error(f"❌ Failed to publish event to stream {stream_name}: {e}")
+
+    async def publish_batch(
+        self,
+        stream_name: str,
+        events: List[Tuple[Dict[str, Any], str]],
+        priority: Optional[str] = None,
+    ):
+        """Publish multiple events to a stream in a batch for improved performance."""
+        if not self.redis:
+            logger.warning("Cannot publish batch events, Redis is not connected.")
+            return []
+
+        if not events:
+            return []
+
+        try:
+            # Determine priority if not specified
+            if priority is None:
+                from shared.config.redis_streams import redis_streams_config
+
+                priority = (
+                    redis_streams_config.get_stream_priority(stream_name) or "normal"
+                )
+
+            # Separate critical and regular events
+            critical_events = []
+            regular_events = []
+
+            for event_data, event_type in events:
+                # Check if this is a critical event
+                is_critical = (
+                    priority == "critical"
+                    or event_type
+                    in ["EMERGENCY_STOP", "SYSTEM_ALERT", "CRITICAL_ALERT"]
+                    or "CRITICAL" in event_type
+                )
+
+                event = EventMessage(
+                    type=event_type,
+                    data=event_data,
+                    source=self.service_name,
+                    priority=priority,
+                )
+
+                if is_critical:
+                    critical_events.append((event, event_type))
+                else:
+                    regular_events.append((event, event_type))
+
+            message_ids = []
+
+            # Publish critical events to critical stream
+            if critical_events:
+                critical_stream = f"{stream_name}:critical"
+                pipeline = self.redis.pipeline()
+
+                for event, event_type in critical_events:
+                    message_dict = event.to_redis_dict()
+                    pipeline.xadd(critical_stream, message_dict)  # type: ignore[arg-type]
+
+                critical_results = await pipeline.execute()
+                message_ids.extend(critical_results)
+
+                logger.info(
+                    f"🚨 CRITICAL: Published {len(critical_events)} events to {critical_stream}"
+                )
+
+            # Publish regular events to main stream
+            if regular_events:
+                pipeline = self.redis.pipeline()
+
+                for event, event_type in regular_events:
+                    message_dict = event.to_redis_dict()
+                    pipeline.xadd(stream_name, message_dict)  # type: ignore[arg-type]
+
+                regular_results = await pipeline.execute()
+                message_ids.extend(regular_results)
+
+                logger.debug(
+                    f"📦 Published {len(regular_events)} events to {stream_name} (batch)"
+                )
+
+            return message_ids
+
+        except redis.RedisError as e:
+            logger.error(
+                f"❌ Failed to publish batch events to stream {stream_name}: {e}"
+            )
+            return []
+
+    async def read_batch(
+        self,
+        stream_name: str,
+        group_name: str,
+        count: int = 10,
+        block: Optional[int] = None,
+    ) -> List[Tuple[str, Dict[str, Any]]]:
+        """Read multiple messages from a stream in a batch."""
+        if not self.redis:
+            logger.warning("Cannot read batch messages, Redis is not connected.")
+            return []
+
+        try:
+            # Read from both regular and critical streams
+            streams_to_read = [stream_name, f"{stream_name}:critical"]
+
+            all_messages = []
+
+            for stream in streams_to_read:
+                try:
+                    messages = await self.redis.xreadgroup(
+                        groupname=group_name,
+                        consumername=f"{self.service_name}_batch_{id(self)}",
+                        streams={stream: ">"},
+                        count=count,
+                        block=block or 1000,  # Default 1 second block
+                    )
+
+                    for _, message_list in messages:
+                        for message_id, data in message_list:
+                            try:
+                                # Deserialize data
+                                deserialized_data = {
+                                    k: json.loads(v) for k, v in data.items()
+                                }
+                                all_messages.append((message_id, deserialized_data))
+                            except json.JSONDecodeError as e:
+                                logger.error(
+                                    f"❌ JSON decode error for message {message_id}: {e}"
+                                )
+
+                except redis.ResponseError:
+                    # Stream might not exist, continue
+                    continue
+
+            # Sort messages by priority (critical first, then by timestamp)
+            def sort_key(msg):
+                msg_data = msg[1]
+                priority = msg_data.get("priority", "normal")
+                from shared.config.redis_streams import redis_streams_config
+
+                priority_weight = redis_streams_config.get_priority_weight(priority)
+                timestamp = float(msg_data.get("timestamp", 0))
+                return (-priority_weight, timestamp)  # Negative for descending priority
+
+            all_messages.sort(key=sort_key)
+
+            if all_messages:
+                logger.debug(
+                    f"📦 Read {len(all_messages)} messages from {stream_name} (batch)"
+                )
+
+            return all_messages
+
+        except redis.RedisError as e:
+            logger.error(
+                f"❌ Failed to read batch messages from stream {stream_name}: {e}"
+            )
+            return []
+
+    async def process_batch(
+        self,
+        stream_name: str,
+        group_name: str,
+        messages: List[Tuple[str, Dict[str, Any]]],
+    ):
+        """Process a batch of messages with acknowledgments."""
+        if not messages:
+            return
+
+        try:
+            # Process messages
+            for message_id, message_data in messages:
+                try:
+                    event = EventMessage(**message_data)
+
+                    # Call handler
+                    if stream_name in self._handlers:
+                        await self._handlers[stream_name](event)
+
+                    # Acknowledge message
+                    actual_stream = (
+                        stream_name.replace(":critical", "")
+                        if ":critical" in stream_name
+                        else stream_name
+                    )
+                    await self.redis.xack(actual_stream, group_name, message_id)
+
+                    logger.debug(f"✅ Processed and acknowledged message {message_id}")
+
+                except Exception as e:
+                    logger.exception(f"❌ Error processing message {message_id}: {e}")
+                    # Handle failed message
+                    actual_stream = (
+                        stream_name.replace(":critical", "")
+                        if ":critical" in stream_name
+                        else stream_name
+                    )
+                    await self._handle_failed_message(
+                        actual_stream, group_name, message_id, message_data, str(e)
+                    )
+
+            logger.info(
+                f"📦 Processed batch of {len(messages)} messages from {stream_name}"
+            )
+
+        except Exception as e:
+            logger.error(f"❌ Error processing batch for {stream_name}: {e}")
 
     async def ensure_consumer_group(self, stream_name: str, consumer_group: str):
         """
