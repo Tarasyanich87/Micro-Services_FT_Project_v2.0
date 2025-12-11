@@ -71,9 +71,9 @@ aiosqlite==0.20.0
 email-validator==2.2.0
 python-multipart==0.0.9
 
-# Redis and Celery
-redis==5.0.7
-celery[redis]==5.4.0
+# Redis and Celery - Enterprise Redis Streams Infrastructure
+redis==5.0.7  # Redis Streams with consumer groups, DLQ, retry logic
+celery[redis]==5.4.0  # Async task processing for compute-intensive operations
 
 # Authentication
 argon2-cffi

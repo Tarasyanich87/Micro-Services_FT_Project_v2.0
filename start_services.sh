@@ -157,7 +157,7 @@ start_trading_gateway() {
     fi
 
     # Set environment variables
-    export PYTHONPATH="$PROJECT_DIR"
+    export PYTHONPATH="$PROJECT_DIR:$PROJECT_DIR/shared"
     export REDIS_URL="redis://localhost:$REDIS_PORT"
 
     # Start Trading Gateway in background
@@ -197,7 +197,7 @@ start_management_server() {
     fi
 
     # Set environment variables
-    export PYTHONPATH="$PROJECT_DIR"
+    export PYTHONPATH="$PROJECT_DIR:$PROJECT_DIR/shared"
     export DATABASE_URL="sqlite+aiosqlite:///./freqtrade.db"
     export REDIS_URL="redis://localhost:$REDIS_PORT"
     export TRADING_GATEWAY_URL="http://localhost:$TG_PORT"
@@ -240,7 +240,7 @@ start_backtesting_server() {
     fi
 
     # Set environment variables
-    export PYTHONPATH="$PROJECT_DIR"
+    export PYTHONPATH="$PROJECT_DIR:$PROJECT_DIR/shared"
     export REDIS_URL="redis://localhost:$REDIS_PORT"
 
     # Start Backtesting Server in background
@@ -280,7 +280,7 @@ start_freqai_server() {
     fi
 
     # Set environment variables
-    export PYTHONPATH="$PROJECT_DIR"
+    export PYTHONPATH="$PROJECT_DIR:$PROJECT_DIR/shared"
     export REDIS_URL="redis://localhost:$REDIS_PORT"
 
     # Start FreqAI Server in background

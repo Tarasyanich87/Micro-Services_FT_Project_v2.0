@@ -14,6 +14,7 @@ from management_server.db.repositories.freqai_model_repository import (
 )
 from management_server.models.models import Bot, BotCreate, BotUpdate, BotStatus, User
 from management_server.tools.redis_streams_event_bus import RedisStreamsEventBus
+from shared.config.redis_streams import redis_streams_config
 from management_server.services.trading_gateway_client import TradingGatewayClient
 from management_server.services.freqtrade_client import FreqtradeClient
 
@@ -160,7 +161,9 @@ class BotService:
         command_data = await self._prepare_start_command(bot, user)
 
         await self.event_bus.publish(
-            stream_name="mcp_commands", event_data=command_data, event_type="START_BOT"
+            stream_name=redis_streams_config.MGMT_TRADING_COMMANDS,
+            event_data=command_data,
+            event_type="START_BOT",
         )
 
         # Отправка WebSocket события для real-time обновлений

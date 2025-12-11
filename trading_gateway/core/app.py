@@ -13,6 +13,7 @@ from ..api.v1.router import api_router
 from ..api.v1 import websocket
 from ..adapters.websocket_adapter import redis_event_listener
 from management_server.tools.redis_streams_event_bus import mcp_streams_event_bus
+from shared.config.redis_streams import redis_streams_config
 from ..services.bot_process_manager import BotProcessManager
 
 logger = logging.getLogger(__name__)
@@ -76,13 +77,17 @@ async def lifespan(app: FastAPI):
 
         # Subscribe to the command stream
         if mcp_streams_event_bus.redis:
-            print("📡 Subscribing to bot_commands stream...")
+            command_stream = redis_streams_config.MGMT_TRADING_COMMANDS
+            consumer_group = redis_streams_config.TRADING_CONSUMERS
+
+            print(f"📡 Subscribing to {command_stream} stream...")
             await mcp_streams_event_bus.subscribe(
-                stream_name="bot_commands",
+                stream_name=command_stream,
                 callback=command_handler,
+                consumer_group=consumer_group,
             )
-            print("✅ Subscribed to bot_commands stream")
-            logger.info("✅ Successfully subscribed to bot_commands stream")
+            print(f"✅ Subscribed to {command_stream} stream")
+            logger.info(f"✅ Successfully subscribed to {command_stream} stream")
 
             # Start WebSocket event listener
             print("📡 Starting WebSocket event listener...")
@@ -96,43 +101,6 @@ async def lifespan(app: FastAPI):
 
         print(traceback.format_exc())
         # Even if there's an error, we still yield to allow the app to start
-    yield
-
-    print("🛑 Shutting down Trading Gateway")
-    try:
-        await mcp_streams_event_bus.disconnect()
-    except Exception as e:
-        logger.error(f"Error during shutdown: {e}")
-        print(f"❌ Error during shutdown: {e}")
-
-    try:
-        print("🔌 Connecting to Redis...")
-        # Connect to Redis
-        await mcp_streams_event_bus.connect()
-        print("✅ Redis connected")
-
-        # Subscribe to the command stream
-        if mcp_streams_event_bus.redis:
-            print("📡 Subscribing to bot_commands stream...")
-            await mcp_streams_event_bus.subscribe(
-                stream_name="bot_commands",
-                callback=command_handler,
-            )
-            print("✅ Subscribed to bot_commands stream")
-            logger.info("✅ Successfully subscribed to bot_commands stream")
-
-            # Start WebSocket event listener
-            print("📡 Starting WebSocket event listener...")
-            asyncio.create_task(redis_event_listener())
-            print("✅ WebSocket event listener started")
-        else:
-            print("❌ Could not subscribe to Redis streams: connection failed.")
-    except Exception as e:
-        print(f"❌ Error during startup: {e}")
-        import traceback
-
-        print(traceback.format_exc())
-
     yield
 
     print("🛑 Shutting down Trading Gateway")
