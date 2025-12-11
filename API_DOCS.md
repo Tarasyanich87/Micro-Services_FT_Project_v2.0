@@ -126,7 +126,7 @@ Authorization: Bearer <token>
 
 ## Redis Streams API 🚀
 
-Enterprise-grade message processing with 99.9% reliability.
+Enterprise-grade message processing with 99.9% reliability, including message prioritization and batch processing capabilities.
 
 ### Stream Health Monitoring
 
@@ -203,126 +203,182 @@ Authorization: Bearer <token>
     "messages_per_minute": 12.5
   },
   "errors": {},
-  "last_updated": 1640995200.123
+    "last_updated": 1640995200.123
 }
 ```
 
-### Dead Letter Queue Management
+## Batch Processing API 📦
 
-#### Get DLQ Statistics
+High-performance batch operations for improved throughput and efficiency.
+
+### Batch Publish Messages
+
+Publish multiple messages in a single batch operation for improved performance.
+
 ```http
-GET /streams/{stream_name}/dlq/stats
+POST /streams/{stream_name}/batch
+Content-Type: application/json
 Authorization: Bearer <token>
-```
 
-**Response:**
-```json
 {
-  "stream": "mgmt:trading:commands:dead",
-  "total_messages": 2,
-  "error_types": {
-    "connection_timeout": 1,
-    "json_parse_error": 1
-  },
-  "last_updated": 1640995200.123
-}
-```
-
-#### List DLQ Messages
-```http
-GET /streams/{stream_name}/dlq/messages?limit=10
-Authorization: Bearer <token>
-```
-
-**Response:**
-```json
-[
-  {
-    "id": "1640995200000-0",
-    "data": {
-      "dead_letter_reason": "connection_timeout",
-      "failed_at": "1640995200.123",
-      "original_stream": "mgmt:trading:commands",
-      "original_message_id": "1640995199000-0",
-      "service_name": "trading_gateway",
-      "final_retry_count": "3"
+  "events": [
+    {
+      "data": {"bot_id": "bot_1", "command": "start"},
+      "type": "START_BOT",
+      "priority": "high"
     },
-    "timestamp": "1640995200.123"
-  }
-]
-```
-
-### Stream Performance Metrics
-
-#### Get Performance Metrics
-```http
-GET /streams/metrics
-Authorization: Bearer <token>
-```
-
-**Response:**
-```json
-{
-  "timestamp": 1640995200.123,
-  "service": "management_server",
-  "redis_connected": true,
-  "active_listeners": 4,
-  "streams": {
-    "mgmt:trading:commands": {
-      "throughput": {"messages_per_minute": 45.2},
-      "lag": {"trading_consumers": 0},
-      "errors": {}
+    {
+      "data": {"bot_id": "bot_2", "command": "stop"},
+      "type": "STOP_BOT",
+      "priority": "normal"
     }
-  },
-  "system_health": {
-    "overall_status": "healthy",
-    "total_streams": 12,
-    "total_groups": 4,
-    "total_lag": 0,
-    "total_dlq_messages": 2
-  }
-}
-```
-
-### Stream Configuration
-
-#### List All Streams
-```http
-GET /streams/
-Authorization: Bearer <token>
-```
-
-**Response:**
-```json
-{
-  "streams": [
-    "mgmt:trading:commands",
-    "trading:mgmt:status",
-    "mgmt:backtesting:commands",
-    "backtesting:mgmt:results",
-    "mgmt:freqai:commands",
-    "freqai:mgmt:status",
-    "system:events",
-    "audit:events"
   ],
-  "total": 12
+  "priority": "normal"  // Optional: default priority for all events
 }
 ```
 
-#### Get Stream Configuration
+**Response:**
+```json
+{
+  "success": true,
+  "message_ids": [
+    "1640995200000-0",
+    "1640995200000-1"
+  ],
+  "published_count": 2,
+  "critical_count": 0,
+  "processing_time_ms": 45
+}
+```
+
+### Batch Read Messages
+
+Read multiple messages from streams with priority-based sorting.
+
 ```http
-GET /streams/{stream_name}/config
+GET /streams/{stream_name}/batch?count=10&group={consumer_group}
 Authorization: Bearer <token>
 ```
 
 **Response:**
 ```json
 {
-  "name": "mgmt:trading:commands",
-  "maxlen": 10000,
-  "approximate": false,
-  "consumer_groups": ["trading_consumers"],
-  "description": "Management server commands to trading gateway"
+  "messages": [
+    {
+      "id": "1640995200000-0",
+      "data": {
+        "type": "START_BOT",
+        "data": {"bot_id": "bot_1"},
+        "priority": "high",
+        "timestamp": 1640995200.123
+      }
+    },
+    {
+      "id": "1640995200000-1",
+      "data": {
+        "type": "STOP_BOT",
+        "data": {"bot_id": "bot_2"},
+        "priority": "normal",
+        "timestamp": 1640995200.124
+      }
+    }
+  ],
+  "total_count": 2,
+  "critical_count": 0,
+  "sorted_by_priority": true
+}
+```
+
+### Batch Process Messages
+
+Process multiple messages with acknowledgments in a single operation.
+
+```http
+POST /streams/{stream_name}/batch/process
+Content-Type: application/json
+Authorization: Bearer <token>
+
+{
+  "group": "trading_consumers",
+  "messages": [
+    {
+      "id": "1640995200000-0",
+      "data": {...}
+    }
+  ]
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "processed_count": 2,
+  "acknowledged_count": 2,
+  "failed_count": 0,
+  "processing_time_ms": 23
+}
+```
+
+## Message Prioritization API 🎯
+
+Priority-based message routing and processing.
+
+### Publish with Priority
+
+```http
+POST /streams/{stream_name}/publish
+Content-Type: application/json
+Authorization: Bearer <token>
+
+{
+  "type": "EMERGENCY_STOP",
+  "data": {"bot_id": "bot_1", "reason": "manual_stop"},
+  "priority": "critical"
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "message_id": "1640995200000-0",
+  "stream": "mgmt:trading:commands:critical",
+  "priority": "critical",
+  "routed_to_critical": true
+}
+```
+
+### Priority Statistics
+
+Get priority distribution and processing statistics.
+
+```http
+GET /streams/priority/stats
+Authorization: Bearer <token>
+```
+
+**Response:**
+```json
+{
+  "priority_distribution": {
+    "critical": 5,
+    "high": 23,
+    "normal": 145,
+    "low": 67
+  },
+  "processing_stats": {
+    "critical_avg_latency_ms": 12,
+    "high_avg_latency_ms": 45,
+    "normal_avg_latency_ms": 89,
+    "low_avg_latency_ms": 156
+  },
+  "queue_depth": {
+    "critical": 0,
+    "high": 3,
+    "normal": 12,
+    "low": 45
+  }
 }
 ```
 
