@@ -2,6 +2,7 @@ import asyncio
 import uvicorn
 import sys
 import os
+import time
 from fastapi import FastAPI, Response
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -13,6 +14,8 @@ sys.path.insert(0, parent_dir)
 from backtesting_server.services.task_service import TaskService
 from shared.redis_client import redis_client
 from shared.logging import setup_logging
+from management_server.tools.redis_streams_event_bus import mcp_streams_event_bus
+from shared.config.redis_streams import redis_streams_config
 
 
 # Simple config
@@ -49,67 +52,173 @@ app.add_middleware(
 # Global services
 task_service = TaskService()
 
-# Simple in-memory command handler (without Redis Streams complexity)
-command_queue = asyncio.Queue()
+# Redis Streams Event Bus for enterprise messaging
+event_bus = mcp_streams_event_bus
 
 
-async def simple_command_handler():
-    """Simple command handler for local development"""
-    while True:
+async def handle_backtest_command(event):
+    """Handle backtest commands from Redis Streams"""
+    payload = None
+    try:
+        command_type = event.type
+        payload = event.data
+
+        logger.info(f"🔄 Processing Redis command: {command_type}")
+
+        if command_type == "START_BACKTEST":
+            result = await task_service.start_backtest(
+                strategy_name=payload["strategy_name"],
+                config_dict=payload["config"],
+                request_id=payload.get("request_id", "redis"),
+            )
+
+            # Send result back via Redis Streams
+            await event_bus.publish(
+                redis_streams_config.BACKTESTING_MGMT_RESULTS,
+                {
+                    "task_id": result.get("task_id", payload.get("request_id")),
+                    "status": "started",
+                    "result": result,
+                    "timestamp": event.timestamp,
+                },
+                "BACKTEST_RESULT",
+            )
+
+            # Update status
+            await event_bus.publish(
+                redis_streams_config.BACKTESTING_MGMT_STATUS,
+                {
+                    "task_id": result.get("task_id", payload.get("request_id")),
+                    "status": "running",
+                    "service": "backtesting_server",
+                    "timestamp": event.timestamp,
+                },
+                "SERVICE_STATUS",
+            )
+
+            logger.info(f"✅ Backtest started via Redis: {result}")
+
+        elif command_type == "GET_TASK_STATUS":
+            result = await task_service.get_task_status(payload["task_id"])
+
+            # Send status back via Redis Streams
+            await event_bus.publish(
+                redis_streams_config.BACKTESTING_MGMT_STATUS,
+                {
+                    "task_id": payload["task_id"],
+                    "status": result.get("status", "unknown"),
+                    "result": result,
+                    "service": "backtesting_server",
+                    "timestamp": event.timestamp,
+                },
+                "SERVICE_STATUS",
+            )
+
+            logger.info(f"📊 Task status sent via Redis: {result}")
+
+    except Exception as e:
+        logger.error(f"❌ Redis command handler error: {e}")
+
+        # Send error status
         try:
-            command_data = await command_queue.get()
-
-            command_type = command_data.get("type")
-            payload = command_data.get("payload", {})
-
-            logger.info(f"Processing command: {command_type}")
-
-            if command_type == "START_BACKTEST":
-                result = await task_service.start_backtest(
-                    strategy_name=payload["strategy_name"],
-                    config=payload["config"],
-                    request_id=payload.get("request_id", "local"),
-                )
-
-                # Simple response (in real implementation - send to Redis)
-                logger.info(f"Backtest started: {result}")
-
-            elif command_type == "GET_TASK_STATUS":
-                result = await task_service.get_task_status(payload["task_id"])
-                logger.info(f"Task status: {result}")
-
-            command_queue.task_done()
-
-        except Exception as e:
-            logger.error(f"Command handler error: {e}")
+            task_id = payload.get("task_id") if payload else "unknown"
+            await event_bus.publish(
+                redis_streams_config.BACKTESTING_MGMT_STATUS,
+                {
+                    "task_id": task_id,
+                    "status": "error",
+                    "error": str(e),
+                    "service": "backtesting_server",
+                    "timestamp": event.timestamp
+                    if hasattr(event, "timestamp")
+                    else time.time(),
+                },
+                "SERVICE_STATUS",
+            )
+        except Exception as status_error:
+            logger.error(f"❌ Failed to send error status: {status_error}")
 
 
 # Start command handler
 @app.on_event("startup")
 async def startup_event():
     """Startup event"""
-    logger.info("🚀 Starting Backtesting Server (Local)")
+    logger.info("🚀 Starting Backtesting Server with Redis Streams")
 
-    # Test Redis connection
+    # Initialize Redis Streams Event Bus
+    global event_bus
+    try:
+        await event_bus.connect()
+        logger.info("✅ Redis Streams Event Bus connected")
+
+        # Subscribe to backtesting commands
+        await event_bus.subscribe(
+            redis_streams_config.MGMT_BACKTESTING_COMMANDS,
+            handle_backtest_command,
+            consumer_group=redis_streams_config.BACKTESTING_CONSUMERS,
+        )
+        logger.info("✅ Subscribed to backtesting commands stream")
+
+    except Exception as e:
+        logger.error(f"❌ Failed to initialize Redis Streams: {e}")
+        # Fallback to simple mode
+        logger.warning("⚠️ Falling back to simple command handler")
+        asyncio.create_task(simple_fallback_handler())
+
+    # Test basic Redis connection
     try:
         redis_client.ping()
-        logger.info("✅ Redis connected")
+        logger.info("✅ Redis basic connection OK")
     except Exception as e:
-        logger.warning(f"Redis not available: {e}")
+        logger.warning(f"⚠️ Redis basic connection failed: {e}")
 
-    # Start command handler
-    asyncio.create_task(simple_command_handler())
+
+async def simple_fallback_handler():
+    """Fallback command handler when Redis Streams fail"""
+    logger.warning("🔄 Using fallback command handler (Redis Streams unavailable)")
+    command_queue = asyncio.Queue()
+
+    while True:
+        try:
+            command_data = await command_queue.get()
+            command_type = command_data.get("type")
+            payload = command_data.get("payload", {})
+
+            logger.info(f"Processing fallback command: {command_type}")
+
+            if command_type == "START_BACKTEST":
+                result = await task_service.start_backtest(
+                    strategy_name=payload["strategy_name"],
+                    config_dict=payload["config"],
+                    request_id=payload.get("request_id", "fallback"),
+                )
+                logger.info(f"Backtest started (fallback): {result}")
+
+            command_queue.task_done()
+
+        except Exception as e:
+            logger.error(f"Fallback command handler error: {e}")
 
 
 @app.get("/health")
 async def health_check():
     """Health check"""
+    redis_streams_ok = False
+    try:
+        if event_bus and event_bus.redis:
+            await event_bus.redis.ping()
+            redis_streams_ok = True
+    except:
+        redis_streams_ok = False
+
     return {
-        "status": "healthy",
+        "status": "healthy" if redis_streams_ok else "degraded",
         "service": "backtesting_server",
         "version": "0.1.0",
-        "redis_connected": True,  # Simplified
+        "redis_connected": redis_streams_ok,
+        "redis_streams_enabled": redis_streams_ok,
         "active_tasks": len(task_service.active_tasks),
+        "consumer_group": redis_streams_config.BACKTESTING_CONSUMERS,
     }
 
 

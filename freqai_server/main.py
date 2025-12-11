@@ -2,6 +2,7 @@ import asyncio
 import uvicorn
 import sys
 import os
+import time
 from fastapi import FastAPI, Response
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -15,6 +16,8 @@ from freqai_server.services.model_service import ModelService
 from freqai_server.services.prediction_service import PredictionService
 from shared.redis_client import redis_client
 from shared.logging import setup_logging
+from management_server.tools.redis_streams_event_bus import mcp_streams_event_bus
+from shared.config.redis_streams import redis_streams_config
 
 
 # Simple config
@@ -53,68 +56,188 @@ device_manager = DeviceManager()
 model_service = ModelService()
 prediction_service = PredictionService()
 
-# Simple in-memory command handler (without Redis Streams complexity)
-command_queue = asyncio.Queue()
+# Redis Streams Event Bus for enterprise messaging
+event_bus = mcp_streams_event_bus
 
 
-async def simple_command_handler():
-    """Simple command handler for local development"""
-    while True:
+async def handle_freqai_command(event):
+    """Handle FreqAI commands from Redis Streams"""
+    payload = None
+    try:
+        command_type = event.type
+        payload = event.data
+
+        logger.info(f"🔄 Processing Redis FreqAI command: {command_type}")
+
+        if command_type == "TRAIN_MODEL":
+            result = await model_service.train_model(
+                model_name=payload["model_name"],
+                config=payload.get("bot_config", {}),
+            )
+
+            # Send result back via Redis Streams
+            await event_bus.publish(
+                redis_streams_config.FREQAI_MGMT_RESULTS,
+                {
+                    "task_id": payload.get(
+                        "request_id", f"train_{payload['model_name']}"
+                    ),
+                    "model_name": payload["model_name"],
+                    "status": "completed"
+                    if result.get("status") == "success"
+                    else "failed",
+                    "result": result,
+                    "timestamp": event.timestamp,
+                },
+                "MODEL_TRAINING_RESULT",
+            )
+
+            # Update status
+            await event_bus.publish(
+                redis_streams_config.FREQAI_MGMT_STATUS,
+                {
+                    "task_id": payload.get(
+                        "request_id", f"train_{payload['model_name']}"
+                    ),
+                    "model_name": payload["model_name"],
+                    "status": "completed"
+                    if result.get("status") == "success"
+                    else "failed",
+                    "service": "freqai_server",
+                    "timestamp": event.timestamp,
+                },
+                "SERVICE_STATUS",
+            )
+
+            logger.info(f"✅ Model training completed via Redis: {result}")
+
+        elif command_type == "PREDICT":
+            result = await prediction_service.predict(
+                model_name=payload["model_name"],
+                features=payload.get("features", {}),
+            )
+
+            # Send result back via Redis Streams
+            await event_bus.publish(
+                redis_streams_config.FREQAI_MGMT_RESULTS,
+                {
+                    "task_id": payload.get(
+                        "request_id", f"predict_{payload['model_name']}"
+                    ),
+                    "model_name": payload["model_name"],
+                    "status": "completed",
+                    "predictions": result,
+                    "timestamp": event.timestamp,
+                },
+                "PREDICTION_RESULT",
+            )
+
+            logger.info(f"🎯 Prediction completed via Redis: {result}")
+
+    except Exception as e:
+        logger.error(f"❌ Redis FreqAI command handler error: {e}")
+
+        # Send error status
         try:
-            command_data = await command_queue.get()
-
-            command_type = command_data.get("type")
-            payload = command_data.get("payload", {})
-
-            logger.info(f"Processing command: {command_type}")
-
-            if command_type == "TRAIN_MODEL":
-                result = await model_service.train_model(
-                    model_name=payload["model_name"],
-                    config=payload.get("bot_config", {}),
-                )
-                logger.info(f"Model training result: {result}")
-
-            elif command_type == "PREDICT":
-                result = await prediction_service.predict(
-                    model_name=payload["model_name"],
-                    features=payload.get("features", {}),
-                )
-                logger.info(f"Prediction result: {result}")
-
-            command_queue.task_done()
-
-        except Exception as e:
-            logger.error(f"Command handler error: {e}")
+            task_id = payload.get("request_id") if payload else "unknown"
+            await event_bus.publish(
+                redis_streams_config.FREQAI_MGMT_STATUS,
+                {
+                    "task_id": task_id,
+                    "status": "error",
+                    "error": str(e),
+                    "service": "freqai_server",
+                    "timestamp": event.timestamp
+                    if hasattr(event, "timestamp")
+                    else time.time(),
+                },
+                "SERVICE_STATUS",
+            )
+        except Exception as status_error:
+            logger.error(f"❌ Failed to send error status: {status_error}")
 
 
 # Start command handler
 @app.on_event("startup")
 async def startup_event():
     """Startup event"""
-    logger.info("🚀 Starting FreqAI Server (Local)")
+    logger.info("🚀 Starting FreqAI Server with Redis Streams")
 
-    # Test Redis connection
+    # Initialize Redis Streams Event Bus
+    global event_bus
+    try:
+        await event_bus.connect()
+        logger.info("✅ Redis Streams Event Bus connected")
+
+        # Subscribe to FreqAI commands
+        await event_bus.subscribe(
+            redis_streams_config.MGMT_FREQAI_COMMANDS,
+            handle_freqai_command,
+            consumer_group=redis_streams_config.FREQAI_CONSUMERS,
+        )
+        logger.info("✅ Subscribed to FreqAI commands stream")
+
+    except Exception as e:
+        logger.error(f"❌ Failed to initialize Redis Streams: {e}")
+        # Fallback to simple mode
+        logger.warning("⚠️ Falling back to simple command handler")
+        asyncio.create_task(simple_fallback_handler())
+
+    # Test basic Redis connection
     try:
         redis_client.ping()
-        logger.info("✅ Redis connected")
+        logger.info("✅ Redis basic connection OK")
     except Exception as e:
-        logger.warning(f"Redis not available: {e}")
+        logger.warning(f"⚠️ Redis basic connection failed: {e}")
 
-    # Start command handler
-    asyncio.create_task(simple_command_handler())
+
+async def simple_fallback_handler():
+    """Fallback command handler when Redis Streams fail"""
+    logger.warning("🔄 Using fallback command handler (Redis Streams unavailable)")
+    command_queue = asyncio.Queue()
+
+    while True:
+        try:
+            command_data = await command_queue.get()
+            command_type = command_data.get("type")
+            payload = command_data.get("payload", {})
+
+            logger.info(f"Processing fallback command: {command_type}")
+
+            if command_type == "TRAIN_MODEL":
+                result = await model_service.train_model(
+                    model_name=payload["model_name"],
+                    config=payload.get("bot_config", {}),
+                )
+                logger.info(f"Model training result (fallback): {result}")
+
+            command_queue.task_done()
+
+        except Exception as e:
+            logger.error(f"Fallback command handler error: {e}")
 
 
 @app.get("/health")
 async def health_check():
     """Health check"""
     devices = device_manager.detect_devices()
+
+    redis_streams_ok = False
+    try:
+        if event_bus and event_bus.redis:
+            await event_bus.redis.ping()
+            redis_streams_ok = True
+    except:
+        redis_streams_ok = False
+
     return {
-        "status": "healthy",
+        "status": "healthy" if redis_streams_ok else "degraded",
         "service": "freqai_server",
         "version": "0.1.0",
-        "redis_connected": True,  # Simplified
+        "redis_connected": redis_streams_ok,
+        "redis_streams_enabled": redis_streams_ok,
         "devices": devices["summary"],
+        "consumer_group": redis_streams_config.FREQAI_CONSUMERS,
     }
 
 
